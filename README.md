@@ -30,15 +30,6 @@ REDIS_HOST = 127.0.0.1
 REDIS_PORT = 6379
 ```
 
-## Admin login credentials
-
-  ```bash
-username = admin@gmail.com
-```
-  ```bash
-password = 123456
-```
-
 ## For windows user
 ```bash
 wsl --install
@@ -64,8 +55,15 @@ npm install
 ```bash
 npm run start
 ```
+## Admin login credentials
 
-.
+  ```bash
+username = admin@gmail.com
+```
+  ```bash
+password = 123456
+```
+
 
 # REST API
 
