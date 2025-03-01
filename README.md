@@ -3,8 +3,9 @@
 A high-performance Flash Sale REST API built with Express.js and MongoDB, featuring Zod validation, Redis caching, and cron jobs for automated sale updates. It leverages JWT authentication, rate limiting for security, and pagination for efficient data retrieval. A background job ensures seamless activation and deactivation of flash sales.
 
 ## Clone the repository
-
+```bash
 git clone [https://github.com/henry-mbamalu/flash-sale.git](https://github.com/henry-mbamalu/flash-sale.git)
+```
 
 ## After cloning, navigate to the root directory
 
@@ -55,12 +56,14 @@ sudo service redis-server start
 ```
 
 ## Install Dependencies
-
+```bash
 npm install
+```
 
 ## Run the app
-
+```bash
 npm run start
+```
 
 .
 
@@ -189,10 +192,10 @@ npm run start
 
     token needs to be in the authorization header (bearer token)
 
-   {
+    {
     "saleId": "67c352f0b40c6416cd393cb6",
     "quantity": 100
-   }
+    }
 ### Response
 
     HTTP/1.1 200 OK
@@ -271,10 +274,10 @@ npm run start
     Content-Type: application/json
 
 
-   {
-    "status": "success",
-    "message": "Operation successful",
-    "data": {
+    {
+        "status": "success",
+        "message": "Operation successful",
+        "data": {
         "data": [
             {
                 "_id": "67c367c3c02a7a5be7db99c1",
@@ -342,15 +345,15 @@ npm run start
                 "updatedAt": "2025-03-01T19:39:23.163Z",
                 "__v": 0
             }
-        ],
-        "meta": {
-            "page": 1,
-            "perPage": 2,
-            "total": 20,
-            "pageCount": 10,
-            "nextPage": 2,
-            "hasNextPage": true,
-            "hasPrevPage": false
+            ],
+            "meta": {
+                "page": 1,
+                "perPage": 2,
+                "total": 20,
+                "pageCount": 10,
+                "nextPage": 2,
+                "hasNextPage": true,
+                "hasPrevPage": false
+            }
         }
-    }
     }
