@@ -42,10 +42,15 @@ password = 123456
 wsl --install
 
 ## Install Redis
-
+```bash
 sudo apt update
+```
+```bash
 sudo apt install redis-server -y
+```
+```bash
 sudo service redis-server start
+```
 
 ## Install Dependencies
 
