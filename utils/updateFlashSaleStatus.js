@@ -7,7 +7,6 @@ export const updateFlashSaleStatus = async () => {
         const now = moment().tz("Africa/Lagos");
         const currentTime = now.format("HH:mm");
         const currentDate = now.startOf("day").toDate();
-        console.log(currentTime)
 
         const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
