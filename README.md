@@ -4,7 +4,7 @@ A high-performance Flash Sale REST API built with Express.js and MongoDB, featur
 
 ## Clone the repository
 ```bash
-git clone [https://github.com/henry-mbamalu/flash-sale.git](https://github.com/henry-mbamalu/flash-sale.git)
+git clone https://github.com/henry-mbamalu/flash-sale.git
 ```
 
 ## After cloning, navigate to the root directory
