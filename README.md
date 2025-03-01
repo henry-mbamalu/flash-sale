@@ -58,7 +58,7 @@ npm run start
 ## Admin login credentials
 
   ```bash
-username = admin@gmail.com
+email = admin@gmail.com
 ```
   ```bash
 password = 123456
