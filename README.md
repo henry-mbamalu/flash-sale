@@ -39,7 +39,9 @@ password = 123456
 ```
 
 ## For windows user
+```bash
 wsl --install
+```
 
 ## Install Redis
 ```bash
