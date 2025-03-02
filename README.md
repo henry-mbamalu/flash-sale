@@ -2,6 +2,8 @@
 
 A high-performance Flash Sale REST API built with Express.js and MongoDB, featuring Zod validation, Redis caching, and cron jobs for automated sale updates. It leverages JWT authentication, rate limiting for security, and pagination for efficient data retrieval. A background job ensures seamless activation and deactivation of flash sales.
 
+To maintain data integrity under high-traffic conditions, concurrency control mechanisms such as distributed locks and atomic operations are implemented. Redis-based distributed locks prevent multiple processes from modifying inventory simultaneously, avoiding race conditions where concurrent purchases could result in overselling. Additionally, MongoDB atomic updates ($set) ensure stock deductions are processed in a single operation, reducing conflicts. These techniques guarantee accurate inventory management and a seamless purchasing experience during flash sales.
+
 ## Clone the repository
 ```bash
 git clone https://github.com/henry-mbamalu/flash-sale.git
@@ -97,6 +99,42 @@ password = 123456
         "lastName": "Doe",
         "email": "user2@gmail.com",
         "role": "customer",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2MzMmNhMDc2Yjg3ZDU2NmMxY2U0OTYiLCJpYXQiOjE3NDA4NDQxOTIsImV4cCI6MTc0MDkzMDU5Mn0.6z_4qZxlU5cMc0x3sbnV6e9iZzdx89NdWnDyaX5zJh8"
+    }
+    }
+
+## Create an Admin
+
+### Request
+
+`POST /api/auth/signup/admin`
+
+     http://localhost:5500/api/auth/signup/admin
+
+     token needs to be in the authorization header (bearer token), only an admin has permission
+
+     {
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": "user2@gmail.com",
+    "password": "123456"
+    }
+
+### Response
+
+    HTTP/1.1 201 CREATED
+    Status: 201 CREATED
+    Content-Type: application/json
+
+    {
+    "status": "success",
+    "message": "User created successfully",
+    "data": {
+        "_id": "67c32ca076b87d566c1ce496",
+        "firstName": "Admin",
+        "lastName": "Admin",
+        "email": "admin@gmail.com",
+        "role": "admin",
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2MzMmNhMDc2Yjg3ZDU2NmMxY2U0OTYiLCJpYXQiOjE3NDA4NDQxOTIsImV4cCI6MTc0MDkzMDU5Mn0.6z_4qZxlU5cMc0x3sbnV6e9iZzdx89NdWnDyaX5zJh8"
     }
     }

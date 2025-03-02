@@ -6,11 +6,11 @@ import isAdmin from "../middleware/isAdmin.js";
 
 const router = express.Router();
 
-router.post("/signup/admin",protectRoute,isAdmin,signUpAdmin)
+router.post("/signup/admin",protectRoute,isAdmin,signUpAdmin);
 
-router.post("/signup",signUp)
+router.post("/signup",signUp);
 
-router.post("/signin",signIn)
+router.post("/signin",signIn);
 
 
 

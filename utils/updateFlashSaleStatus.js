@@ -17,14 +17,14 @@ export const updateFlashSaleStatus = async () => {
         });
         
         if (!sales.length) return;
-        
+        console.log(currentTime)
         for (const sale of sales) {
             if (currentTime >= sale.startTime && currentTime < sale.endTime && sale.totalStock !== 0) {
                 // Activate flash sale
                 sale.isActive = true;
                 await sale.save();
                 console.log(`Flash sale started for ${sale.saleDate}!`);
-            } else if (currentTime === sale.endTime || sale.totalStock === 0) {
+            } else if (currentTime < sale.startTime || currentTime >= sale.endTime || sale.totalStock === 0) {
                 // Deactivate flash sale
                 sale.isActive = false;
                 await sale.save();

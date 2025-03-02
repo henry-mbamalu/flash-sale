@@ -4,6 +4,7 @@ import { sendErrorResponse, sendSuccessResponse } from "../utils/apiResonse.js";
 import Purchase from "../models/purchase.model.js";
 import { paginate } from "../utils/paginate.js";
 import moment from "moment-timezone";
+import { redis } from "../db/redis.js";
 
 export const createFlashSale = async (req, res, next) => {
 	try {
@@ -23,9 +24,19 @@ export const purchaseFlashSale = async (req, res, next) => {
 	session.startTransaction();
 	try {
 		const { saleId, quantity } = purchaseFlashSaleValidationSchema.parse(req.body);
+
+		const lockKey = `flash_sale_lock:${saleId}`;
+		const lockTTL = 5000; // 5 seconds
+
+		const lock = await redis.set(lockKey, "locked", "NX", "PX", lockTTL);
+		if (!lock) {
+			await session.abortTransaction();
+			return sendErrorResponse(res, 400, "High demand, try again.");
+		}
+		
 		const now = moment().tz("Africa/Lagos");
 		const currentTime = now.format("HH:mm");
-		const currentDate  = moment.tz(now.format("YYYY-MM-DD"), "YYYY-MM-DD", "Africa/Lagos").toDate();
+		const currentDate = moment.tz(now.format("YYYY-MM-DD"), "YYYY-MM-DD", "Africa/Lagos").toDate();
 		const todayDate = now.format("YYYY-MM-DD")
 		const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 		const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -37,8 +48,8 @@ export const purchaseFlashSale = async (req, res, next) => {
 			return res.status(400).json({ status: "failed", error: "Flash sale is not active" });
 		}
 
-		
-		if (todayDate < sale.saleDate ||currentTime < sale.startTime || currentTime > sale.endTime) {
+
+		if (todayDate < sale.saleDate || currentTime < sale.startTime || currentTime > sale.endTime) {
 			await session.abortTransaction();
 			return res.status(400).json({ status: "failed", error: "Outside flash sale time" });
 		}
@@ -54,25 +65,42 @@ export const purchaseFlashSale = async (req, res, next) => {
 			return sendErrorResponse(res, 400, `Not enough stock available, available no of stock is ${sale.stockPerSale}`);
 		}
 
-	
-		sale.stockPerSale -= quantity
-		sale.totalStock -= quantity;
-		if (sale.stockPerSale === 0 && sale.totalStock > 0) {
-			sale.saleCount += 1;
-			if (sale.totalStock >= 200) {
-				sale.stockPerSale = 200;
-			}
-			else {
-				sale.stockPerSale = sale.totalStock;
-			}
 
-		}
-
-		await sale.save({ session });
-
+		await FlashSale.findOneAndUpdate(
+			{ _id: saleId, stockPerSale: { $gte: quantity }, totalStock: { $gte: quantity } },
+			[
+			  {
+				$set: {
+				  stockPerSale: {
+					$cond: {
+					  if: { $lte: ["$stockPerSale", quantity] }, // If stockPerSale is 0
+					  then: {
+						$cond: {
+						  if: { $gte: ["$totalStock", 200] }, // If totalStock is at least 200
+						  then: 200, // Reset stockPerSale to 200
+						  else: { $subtract: ["$totalStock", quantity] } // Otherwise, set it to totalStock - quantity
+						}
+					  },
+					  else: { $subtract: ["$stockPerSale", quantity] } // Otherwise, just subtract normally
+					}
+				  },
+				  totalStock: { $subtract: ["$totalStock", quantity] }, // Reduce totalStock
+				  saleCount: {
+					$cond: {
+					  if: { $lte: ["$stockPerSale", quantity] }, // Only increment saleCount if stockPerSale resets
+					  then: { $add: ["$saleCount", 1] },
+					  else: "$saleCount"
+					}
+				  }
+				}
+			  }
+			],
+			{ new: true, session }
+		  );
 
 		await Purchase.create([{ userId: req.user._id, quantity, saleId: sale._id }], { session });
 
+		await redis.del(lockKey);  // Release lock after purchase
 		await session.commitTransaction();
 		return sendSuccessResponse(res, 201, undefined, 'Purchase successful');
 	} catch (error) {
