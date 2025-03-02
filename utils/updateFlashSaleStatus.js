@@ -3,7 +3,7 @@ import moment from "moment-timezone";
 
 export const updateFlashSaleStatus = async () => {
     try {
-        console.log('******')
+       
         const now = moment().tz("Africa/Lagos");
         const currentTime = now.format("HH:mm");
         const currentDate = now.startOf("day").toDate();
@@ -17,7 +17,7 @@ export const updateFlashSaleStatus = async () => {
         });
         
         if (!sales.length) return;
-        console.log(currentTime)
+
         for (const sale of sales) {
             if (currentTime >= sale.startTime && currentTime < sale.endTime && sale.totalStock !== 0) {
                 // Activate flash sale
